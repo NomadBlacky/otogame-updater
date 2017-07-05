@@ -1,0 +1,19 @@
+stacks: [otogame-updater-stack]
+regions: [eu-west-1]
+
+deployments:
+  otogame-updater:
+    type: aws-lambda
+    parameters:
+      bucket: otogame-updater-stack-dist
+      functionNames: [otogame-updater-]
+      fileName: otogame-updater.jar
+      prefixStack: false
+    dependencies: [otogame-updater-cfn]
+  otogame-updater-cfn:
+    type: cloud-formation
+    app: otogame-updater
+    parameters:
+      prependStackToCloudFormationStackName: false
+      cloudFormationStackName: otogame-updater
+      templatePath: cfn.yaml
