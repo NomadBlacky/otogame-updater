@@ -19,7 +19,8 @@ libraryDependencies ++= Seq(
   "com.amazonaws" % "aws-java-sdk" % "1.11.158",
   "com.amazonaws" % "aws-lambda-java-core" % "1.1.0",
   "com.amazonaws" % "aws-java-sdk-lambda" % "1.11.158",
-  "com.amazonaws" % "aws-java-sdk-dynamodb" % "1.11.158"
+  "com.amazonaws" % "aws-java-sdk-dynamodb" % "1.11.158",
+  "com.softwaremill.sttp" %% "core" % "0.0.1",
 )
 
 enablePlugins(RiffRaffArtifact)
