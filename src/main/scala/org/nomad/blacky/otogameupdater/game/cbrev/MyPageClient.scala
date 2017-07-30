@@ -1,23 +1,21 @@
 package org.nomad.blacky.otogameupdater.game.cbrev
 
-import com.softwaremill.sttp.Cookie
+import java.net.HttpCookie
 
-class MyPageClient(val accessCode: String, val password: String) {
-  // fields
-  var cookie: Option[Cookie] = None
+object MyPageClient {
+  val loginCookieName = "_rst"
+}
 
-  // sttp
-  import com.softwaremill.sttp._
-  implicit val handler = HttpURLConnectionSttpHandler
+class MyPageClient() {
+  import MyPageClient._
+  import scalaj.http._
 
-  def login(): Boolean = {
-    val request = sttp
-      .body(Map("ac" -> accessCode, "passwd" -> password), "UTF-8")
-      .post(uri"https://rev-srw.ac.capcom.jp/webloginconfirm")
-    val response = request.send()
-    cookie = response.cookies.find(_.name == "_rst")
-    cookie.isDefined
+  def login(accessCode: String, password: String): Option[HttpCookie] = {
+    val response =
+      Http("https://rev-srw.ac.capcom.jp/webloginconfirm")
+        .postForm(Seq(("ac", accessCode), ("passwd", password)))
+        .asString
+    response.cookies.find(_.getName == loginCookieName)
   }
 
-  def isLoggedIn() = cookie.isDefined
 }
