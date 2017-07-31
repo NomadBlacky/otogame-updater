@@ -21,6 +21,7 @@ libraryDependencies ++= Seq(
   "com.amazonaws" % "aws-java-sdk-lambda" % "1.11.158",
   "com.amazonaws" % "aws-java-sdk-dynamodb" % "1.11.158",
   "org.scalaj" %% "scalaj-http" % "2.3.0",
+  "net.ruippeixotog" %% "scala-scraper" % "2.0.0",
 
   "org.scalactic" %% "scalactic" % "3.0.1",
   "org.scalatest" %% "scalatest" % "3.0.1" % "test"
