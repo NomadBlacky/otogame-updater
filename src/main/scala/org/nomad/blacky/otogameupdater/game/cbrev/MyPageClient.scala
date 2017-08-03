@@ -10,32 +10,34 @@ import scala.util.matching.Regex
 import scalaj.http._
 
 
-class MyPageClient() {
+class MyPageClient(val accessCode: String, val password: String) {
 
   val browser: Browser = JsoupBrowser()
   val profileSelector: String = "#profile > div > div.blockRight > div > div.loginBlock"
-  val charangeClassRegexp: Regex = """.*obj_class(\d+)\.png.*""".r
+  val challengeClassRegex: Regex = """.*obj_class(\d+)\.png.*""".r
 
-  def login(accessCode: String, password: String): Option[HttpCookie] =
+  lazy val loginCookie: HttpCookie =
     Http("https://rev-srw.ac.capcom.jp/webloginconfirm")
       .postForm(Seq(("ac", accessCode), ("passwd", password)))
       .asString
       .cookies
       .find(_.getName == "_rst")
+      .getOrElse(throw new IllegalStateException(s"Failed to loged in.(accessCode=$accessCode, password=$password)"))
 
-  def getUserData(loginCookie: HttpCookie): UserData = {
+  def getUserData(): UserData = {
     val response = Http("https://rev-srw.ac.capcom.jp/profile")
       .cookie(loginCookie)
       .asString
     val doc = browser.parseString(response.body) >> element(profileSelector)
 
     UserData(
-      name = doc >> element("div.m-profile .m-profile__name") >> text,
-      rankPoint = doc >> element("div.m-profile .m-profile__rp dd") >> text toDouble,
+      name          = doc >> element("div.m-profile .m-profile__name")      >> text,
+      rankPoint     = doc >> element("div.m-profile .m-profile__rp dd")     >> text toDouble,
       charangeClass = doc >> element("div.m-profile .m-profile__class img") >> attr("src") match {
-        case charangeClassRegexp(x) => x.toInt
+        case challengeClassRegex(x) => x.toInt
       },
-      revUserId = doc >> element(".p-table__tbody dd") >> text toInt
+      revUserId     = doc >> element(".p-table__tbody dd") >> text toInt
     )
   }
+
 }
