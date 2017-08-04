@@ -5,10 +5,10 @@ package org.nomad.blacky.otogameupdater.game.cbrev
   */
 case class PlayScore(
   stage: Stage,
-  score: Int,
+  highScore: Int,
   clearRate: Double,
-  rankPoint: Double,
-  clearStatus: ClearStatus,
-  grade: Grade,
+  rankPoint: Option[Double],
+  clearStatus: Option[ClearStatus],
+  grade: Option[Grade],
   fullCombo: Boolean
 )
