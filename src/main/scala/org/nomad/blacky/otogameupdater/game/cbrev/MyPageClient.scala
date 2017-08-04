@@ -40,4 +40,18 @@ class MyPageClient(val accessCode: String, val password: String) {
     )
   }
 
+  def getMusics(): Seq[MusicInList] = {
+    val response = Http("https://rev-srw.ac.capcom.jp/playdatamusic")
+      .cookie(loginCookie)
+      .asString
+    val elements = browser.parseString(response.body) >> elementList(".pdMusicData")
+
+    elements.map(e => {
+      MusicInList(
+        title     = e >>  element(".pdMtitle")  >> text,
+        artist    = e >>  element(".pdMauthor") >> text,
+        detailUrl = e >?> element("a")          >> attr("href")
+      )
+    })
+  }
 }
