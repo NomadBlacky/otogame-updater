@@ -26,11 +26,3 @@ libraryDependencies ++= Seq(
   "org.scalactic" %% "scalactic" % "3.0.1",
   "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 )
-
-enablePlugins(RiffRaffArtifact)
-
-assemblyJarName := s"${name.value}.jar"
-riffRaffPackageType := assembly.value
-riffRaffUploadArtifactBucket := Option("riffraff-artifact")
-riffRaffUploadManifestBucket := Option("riffraff-builds")
-riffRaffArtifactResources += (file("cfn.yaml"), s"${name.value}-cfn/cfn.yaml")
