@@ -1,11 +1,11 @@
-package org.nomad.blacky.otogameupdater.game.cbrev
+package org.nomadblacky.otogameupdater.game.cbrev
 
 import java.net.HttpCookie
 
 import net.ruippeixotog.scalascraper.browser.{Browser, JsoupBrowser}
+import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
+import net.ruippeixotog.scalascraper.dsl.DSL.Parse._
 import net.ruippeixotog.scalascraper.dsl.DSL._
-import Extract._
-import Parse._
 
 import scala.util.matching.Regex
 import scalaj.http._
