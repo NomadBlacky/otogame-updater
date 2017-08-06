@@ -1,4 +1,4 @@
-package org.nomadblacky.otogameupdater.game.cbrev
+package org.nomadblacky.otogameupdater.game.cbrev.model
 
 /**
   * Created by blacky on 17/07/19.

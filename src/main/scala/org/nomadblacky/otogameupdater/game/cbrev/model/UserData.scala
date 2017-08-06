@@ -1,4 +1,4 @@
-package org.nomadblacky.otogameupdater.game.cbrev
+package org.nomadblacky.otogameupdater.game.cbrev.model
 
 case class UserData(
   name: String,
