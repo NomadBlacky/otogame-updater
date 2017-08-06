@@ -6,7 +6,7 @@ description:= "This program post the update of rhythm game scores to SNS."
 
 version := "1.0"
 
-scalaVersion := "2.12.2"
+scalaVersion := "2.12.3"
 
 scalacOptions ++= Seq(
   "-deprecation",
