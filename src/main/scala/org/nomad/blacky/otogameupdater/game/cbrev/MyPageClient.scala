@@ -3,8 +3,9 @@ package org.nomad.blacky.otogameupdater.game.cbrev
 import java.net.HttpCookie
 
 import net.ruippeixotog.scalascraper.browser.{Browser, JsoupBrowser}
-import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 import net.ruippeixotog.scalascraper.dsl.DSL._
+import Extract._
+import Parse._
 
 import scala.util.matching.Regex
 import scalaj.http._
@@ -24,23 +25,23 @@ class MyPageClient(val accessCode: String, val password: String) {
       .find(_.getName == "_rst")
       .getOrElse(throw new IllegalStateException(s"Failed to loged in.(accessCode=$accessCode, password=$password)"))
 
-  def getUserData(): UserData = {
+  def fetchUserData: UserData = {
     val response = Http("https://rev-srw.ac.capcom.jp/profile")
       .cookie(loginCookie)
       .asString
     val doc = browser.parseString(response.body) >> element(profileSelector)
 
     UserData(
-      name          = doc >> element("div.m-profile .m-profile__name")      >> text,
-      rankPoint     = doc >> element("div.m-profile .m-profile__rp dd")     >> text toDouble,
-      charangeClass = doc >> element("div.m-profile .m-profile__class img") >> attr("src") match {
-        case challengeClassRegex(x) => x.toInt
-      },
-      revUserId     = doc >> element(".p-table__tbody dd") >> text toInt
+      name          = doc >> extractor("div.m-profile .m-profile__name", text),
+      charangeClass = doc >> extractor(
+        "div.m-profile .m-profile__class img", attr("src"), regexMatch(challengeClassRegex).captured
+      ).map(_.toInt),
+      rankPoint     = doc >> extractor("div.m-profile .m-profile__rp dd", text, asDouble),
+      revUserId     = doc >> extractor(".p-table__tbody dd", text, asInt)
     )
   }
 
-  def getMusics(): Seq[MusicInList] = {
+  def fetchMusics: Seq[MusicInList] = {
     val response = Http("https://rev-srw.ac.capcom.jp/playdatamusic")
       .cookie(loginCookie)
       .asString
@@ -54,4 +55,9 @@ class MyPageClient(val accessCode: String, val password: String) {
       )
     })
   }
+}
+
+object MyPageClient {
+  def apply(accessCode: String, password: String): MyPageClient =
+    new MyPageClient(accessCode, password)
 }
