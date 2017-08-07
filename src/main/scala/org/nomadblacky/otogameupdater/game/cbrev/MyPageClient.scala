@@ -3,15 +3,10 @@ package org.nomadblacky.otogameupdater.game.cbrev
 import java.net.HttpCookie
 
 import net.ruippeixotog.scalascraper.browser.{Browser, JsoupBrowser}
-import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
-import net.ruippeixotog.scalascraper.dsl.DSL.Parse._
-import net.ruippeixotog.scalascraper.dsl.DSL._
+import org.nomadblacky.otogameupdater.game.cbrev.extractor.Imports._
 import org.nomadblacky.otogameupdater.game.cbrev.model.{MusicInList, UserData}
 
-import scala.util.matching.Regex
 import scalaj.http._
-
-import org.nomadblacky.otogameupdater.game.cbrev.extractor.Imports._
 
 
 class MyPageClient(val accessCode: String, val password: String) {

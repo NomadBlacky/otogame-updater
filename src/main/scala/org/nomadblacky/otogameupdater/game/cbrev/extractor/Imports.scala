@@ -9,14 +9,14 @@ import org.nomadblacky.otogameupdater.game.cbrev.model.{MusicInList, UserData}
 import scala.util.matching.Regex
 
 object Imports {
-  val browser: Browser = JsoupBrowser()
   val profileSelector: String = "#profile > div > div.blockRight > div > div.loginBlock"
   val challengeClassRegex: Regex = """.*obj_class(\d+)\.png.*""".r
 
-  def extract[A](htmlBody: String)(implicit extractor: Extractor[A]): A = extractor.extract(htmlBody)
+  def extract[A](htmlBody: String, browser: Browser = JsoupBrowser())(implicit extractor: Extractor[A]): A =
+    extractor.extract(htmlBody, browser)
 
   implicit object UserDataExtractor extends Extractor[UserData] {
-    override def extract(htmlBody: String): UserData = {
+    override def extract(htmlBody: String, browser: Browser): UserData = {
       val doc = browser.parseString(htmlBody) >> element(profileSelector)
 
       UserData(
@@ -31,7 +31,7 @@ object Imports {
   }
 
   implicit object MusicsExtractor extends Extractor[Seq[MusicInList]] {
-    override def extract(htmlBody: String): Seq[MusicInList] = {
+    override def extract(htmlBody: String, browser: Browser): Seq[MusicInList] = {
       val elements = browser.parseString(htmlBody) >> elementList(".pdMusicData")
 
       elements.map(e => {
