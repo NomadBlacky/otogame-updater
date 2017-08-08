@@ -1,9 +1,8 @@
-package org.nomadblacky.otogameupdater.game.cbrev
+package org.nomadblacky.otogameupdater.game.cbrev.client
 
 import java.net.HttpCookie
 
 import net.ruippeixotog.scalascraper.browser.{Browser, JsoupBrowser}
-import org.nomadblacky.otogameupdater.game.cbrev.extractor.Imports._
 import org.nomadblacky.otogameupdater.game.cbrev.model.{MusicInList, UserData}
 
 import scalaj.http._

@@ -1,4 +1,4 @@
-package org.nomadblacky.otogameupdater.game.cbrev.extractor
+package org.nomadblacky.otogameupdater.game.cbrev.ext
 
 import net.ruippeixotog.scalascraper.browser.Browser
 

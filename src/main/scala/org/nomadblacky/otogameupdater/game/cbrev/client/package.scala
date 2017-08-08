@@ -1,14 +1,15 @@
-package org.nomadblacky.otogameupdater.game.cbrev.extractor
+package org.nomadblacky.otogameupdater.game.cbrev
 
 import net.ruippeixotog.scalascraper.browser.{Browser, JsoupBrowser}
-import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
-import net.ruippeixotog.scalascraper.dsl.DSL.Parse._
 import net.ruippeixotog.scalascraper.dsl.DSL._
+import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{attr, element, elementList, text}
+import net.ruippeixotog.scalascraper.scraper.ContentParsers.{asDouble, asInt, regexMatch}
+import org.nomadblacky.otogameupdater.game.cbrev.ext.Extractor
 import org.nomadblacky.otogameupdater.game.cbrev.model.{MusicInList, UserData}
 
 import scala.util.matching.Regex
 
-object Imports {
+package object client {
   val profileSelector: String = "#profile > div > div.blockRight > div > div.loginBlock"
   val challengeClassRegex: Regex = """.*obj_class(\d+)\.png.*""".r
 
