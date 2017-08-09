@@ -101,3 +101,6 @@ src_managed/
 project/boot/
 .history
 .cache
+
+# Serverless Framework
+.serverless/
