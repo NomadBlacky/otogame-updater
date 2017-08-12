@@ -50,8 +50,6 @@ package:
   artifact: target/scala-2.12/otogame.jar
 
 functions:
-  hello:
-    handler: hello.Handler
   updateUserData:
     handler: org.nomadblacky.otogameupdater.game.cbrev.lambda.UpdateUserData
 
@@ -100,23 +98,6 @@ functions:
 #       Value: "Some output value"
 resources:
   Resources:
-    helloDynamoDbTable:
-      Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
-      Properties:
-        AttributeDefinitions:
-          -
-            AttributeName: id
-            AttributeType: S
-        KeySchema:
-          -
-            AttributeName: id
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: "${self:provider.stage}-hello"
-
     cbrevRankPointDynamoDbTable:
       Type: "AWS::DynamoDB::Table"
       DeletionPolicy: Retain
