@@ -1,6 +1,6 @@
-package org.nomadblacky.otogameupdater.game.cbrev
+package org.nomadblacky.otogameupdater.game.cbrev.lambda
 
-package object lambda {
+object Utils {
 
   implicit class RichProduct(p: Product) {
     def toMap(): Map[String, Any] =

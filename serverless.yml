@@ -51,7 +51,7 @@ package:
 
 functions:
   updateUserData:
-    handler: org.nomadblacky.otogameupdater.game.cbrev.lambda.UpdateUserData
+    handler: org.nomadblacky.otogameupdater.game.cbrev.lambda.update_user_data.UpdateUserData
     events:
       - schedule: cron(0 0,12-23/3 * * ? *)
 

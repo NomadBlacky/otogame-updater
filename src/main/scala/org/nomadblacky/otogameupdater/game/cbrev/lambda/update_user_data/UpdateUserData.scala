@@ -1,10 +1,11 @@
-package org.nomadblacky.otogameupdater.game.cbrev.lambda
+package org.nomadblacky.otogameupdater.game.cbrev.lambda.update_user_data
 
-import awscala._
-import awscala.dynamodbv2._
+import awscala.dynamodbv2.DynamoDB
+import awscala.{DateTime, Region}
 import com.amazonaws.services.lambda.runtime.{Context, RequestHandler}
 import com.github.nscala_time.time.Imports
 import org.nomadblacky.otogameupdater.game.cbrev.client.MyPageClient
+import org.nomadblacky.otogameupdater.game.cbrev.lambda.Utils._
 
 import scala.beans.BeanProperty
 
