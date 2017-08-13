@@ -8,6 +8,10 @@ This program post the update of rhythm game scores to SNS.
 
 - General
   - [x] Login to MyPage by HTTP Client
+- [Feature] Tweeting
+  - [Lambda] Tweeting
+	- [ ] Configure tokens from environment variables
+	- [ ] Tweet from events
 - [Feature] Update user data
   - [Lambda] UpdateUserData
 	- [x] Fetch user data
