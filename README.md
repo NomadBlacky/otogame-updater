@@ -9,7 +9,7 @@ This program post the update of rhythm game scores to SNS.
 - General
   - [x] Login to MyPage by HTTP Client
 - [Feature] Update user data
-  - [Lmabda] UpdateUserData
+  - [Lambda] UpdateUserData
 	- [x] Fetch user data
     - [x] Configure DynamoDB
 	- [x] Insert user data to DynamoDB
