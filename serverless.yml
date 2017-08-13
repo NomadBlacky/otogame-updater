@@ -106,6 +106,7 @@ resources:
       Type: "AWS::DynamoDB::Table"
       DeletionPolicy: Retain
       Properties:
+        TableName: "CbRevRankPoints"
         AttributeDefinitions:
           -
             AttributeName: RevUserId
@@ -117,5 +118,5 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        TableName: "CbRevRankPoints"
-      
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
