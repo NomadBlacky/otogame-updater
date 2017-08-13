@@ -104,3 +104,6 @@ project/boot/
 
 # Serverless Framework
 .serverless/
+
+# Serverless Framework Variables
+.varUpdateUserData.yml
