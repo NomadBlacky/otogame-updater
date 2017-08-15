@@ -56,6 +56,15 @@ functions:
       - schedule:
           rate: cron(0 0,12-23/3 * * ? *)
           input: ${file(./.varUpdateUserData.yml)}
+  updateUserDataStream:
+    handler: org.nomadblacky.otogameupdater.game.cbrev.lambda.update_user_data_stream.Handler
+    events:
+      - stream:
+          type: dynamodb
+          arn:
+            Fn::GetAtt:
+              - cbrevRankPointDynamoDbTable
+              - StreamArn
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
