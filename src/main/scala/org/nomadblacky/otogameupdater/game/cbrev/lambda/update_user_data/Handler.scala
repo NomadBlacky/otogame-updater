@@ -21,7 +21,7 @@ case class Response(
   @BeanProperty request: Request
 )
 
-class UpdateUserData extends RequestHandler[Request, Response] {
+class Handler extends RequestHandler[Request, Response] {
 
   implicit val dynamoDB: DynamoDB = DynamoDB.at(Region.Tokyo)
 
