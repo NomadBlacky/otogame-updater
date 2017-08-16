@@ -1,11 +1,12 @@
 package org.nomadblacky.otogameupdater.game.cbrev.lambda.update_user_data
 
-import awscala.dynamodbv2.DynamoDB
 import awscala.{DateTime, Region}
-import com.amazonaws.services.lambda.runtime.{Context, RequestHandler}
-import com.github.nscala_time.time.Imports
+import awscala.dynamodbv2.DynamoDB
+import com.amazonaws.services.lambda.runtime.{Context, LambdaLogger, RequestHandler}
 import org.nomadblacky.otogameupdater.game.cbrev.client.MyPageClient
+import org.nomadblacky.otogameupdater.game.cbrev.lambda.DynamoDbRecord
 import org.nomadblacky.otogameupdater.game.cbrev.lambda.Utils._
+import org.nomadblacky.otogameupdater.game.cbrev.model.UserData
 
 import scala.beans.BeanProperty
 
@@ -21,16 +22,33 @@ case class Response(
   @BeanProperty request: Request
 )
 
+case class UserDataRecord(userData: UserData, updated: DateTime) extends DynamoDbRecord {
+  override val key: Int = userData.revUserId
+  override val attributes: Seq[(String, Any)] = userData.toMap()
+    .filter { case (k,_) => k != "revUserId" }
+    .+("updated" -> updated)
+    .toSeq
+}
+
 class Handler extends RequestHandler[Request, Response] {
 
   implicit val dynamoDB: DynamoDB = DynamoDB.at(Region.Tokyo)
+  val tableName: String = "CbRevRankPoints"
 
   override def handleRequest(input: Request, context: Context): Response = {
+    val logger: LambdaLogger = context.getLogger
+
     val userData = MyPageClient(input.accessCode, input.password).fetchUserData
-    val table = dynamoDB.table("CbRevRankPoints").get
-    val now = DateTime.now(Imports.DateTimeZone.forID("Asia/Tokyo"))
-    val attrs: Seq[(String, Any)] = userData.toMap().+("updated" -> now).toSeq
-    table.put(userData.revUserId, attrs: _*)
+    logger.log(s"Fetch user data: $userData")
+    
+    val table = dynamoDB.table(tableName)
+      .getOrElse(throw new IllegalStateException(s"Table not found: $tableName"))
+
+    val record = UserDataRecord(userData, now())
+
+    table.put(record.key, record.attributes: _*)
+    logger.log(s"Success to put data: $record")
+
     Response("OK", input)
   }
 }
