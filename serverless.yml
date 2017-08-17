@@ -65,6 +65,9 @@ functions:
             Fn::GetAtt:
               - cbrevRankPointDynamoDbTable
               - StreamArn
+  tweeting:
+    handler: org.nomadblacky.otogameupdater.game.cbrev.lambda.tweeting.Handler
+    environment: ${file(./.envVarTweeting.yml)}
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events

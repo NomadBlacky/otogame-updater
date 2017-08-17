@@ -107,3 +107,4 @@ project/boot/
 
 # Serverless Framework Variables
 .varUpdateUserData.yml
+.envVarTweeting.yml
