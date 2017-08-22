@@ -20,7 +20,7 @@ class HandlerTest extends FunSuite with Matchers {
 
   val fixtures: TableFor3[Image, Image, Option[String]] = Table[Image, Image, Option[String]](
     ("oldImage", "newImage", "result"),
-    (Map(rp -> attr("1234.56")), Map(rp -> attr("1234.89")), Some("1234.56, 1234.89, 0.33")),
+    (Map(rp -> attr("1234.56")), Map(rp -> attr("1234.89")), Some("[cbRev - RP was updated!]\n1234.56 → 1234.89 (+0.33)")),
     (Map()                     , Map(rp -> attr("1234.89")), None),
     (Map()                     , Map()                     , None),
     (Map(rp -> attr("2345"))   , Map(rp -> attr("1234"))   , None)

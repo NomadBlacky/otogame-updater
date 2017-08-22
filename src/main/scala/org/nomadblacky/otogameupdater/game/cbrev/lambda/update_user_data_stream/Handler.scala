@@ -37,8 +37,7 @@ object Handler {
       newRp <- newImage.get("rankPoint").flatMap(v => Option(v.getN)).map(_.toDouble)
       diff  <- Some(newRp - oldRp).filter(0.0 < _)
     } yield {
-      // TODO: Implement it
-      """%.2f, %.2f, %.2f""" format (oldRp, newRp, diff)
+      "[cbRev - RP was updated!]\n%.2f → %.2f (%+.2f)" format (oldRp, newRp, diff)
     }
   }
 
