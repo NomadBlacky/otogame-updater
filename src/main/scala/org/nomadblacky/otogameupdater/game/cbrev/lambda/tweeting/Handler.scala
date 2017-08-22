@@ -1,8 +1,13 @@
 package org.nomadblacky.otogameupdater.game.cbrev.lambda.tweeting
 
 import com.amazonaws.services.lambda.runtime.{Context, RequestHandler}
+import com.danielasfregola.twitter4s.TwitterRestClient
+import com.danielasfregola.twitter4s.entities.{AccessToken, ConsumerToken, Tweet}
 
 import scala.beans.BeanProperty
+import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.Duration
 
 case class Request(
   @BeanProperty var text: String = "",
@@ -12,7 +17,8 @@ case class Request(
 
 case class Response(
   @BeanProperty message: String,
-  @BeanProperty request: Request
+  @BeanProperty request: Request,
+  @BeanProperty tweet: Tweet
 )
 
 case class Tokens(
@@ -33,13 +39,14 @@ object Tokens {
 
 class Handler extends RequestHandler[Request, Response] {
   override def handleRequest(input: Request, context: Context): Response = {
-    val logger = context.getLogger
-
     val tokens = Tokens.fromEnv()
-    logger.log(tokens.toString)
 
-    // TODO: Implement it.
+    val restClient = TwitterRestClient(
+      ConsumerToken(tokens.consumerKey, tokens.consumerSecret),
+      AccessToken(tokens.accessToken, tokens.accessTokenSecret)
+    )
+    val f = restClient.createTweet(status = input.text).map(Response("OK", input, _))
 
-    Response("OK", input)
+    Await.result(f, Duration.Inf)
   }
 }
