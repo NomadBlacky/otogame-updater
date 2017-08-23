@@ -40,11 +40,15 @@ object Handler {
     newImage: collection.Map[String, AttributeValue]
   ): Option[String] = {
     for {
-      oldRp <- oldImage.get("rankPoint").flatMap(v => Option(v.getN)).map(_.toDouble)
-      newRp <- newImage.get("rankPoint").flatMap(v => Option(v.getN)).map(_.toDouble)
-      diff  <- Some(newRp - oldRp).filter(0.0 < _)
+      oldRp  <- oldImage.get("rankPoint").flatMap(v => Option(v.getN)).map(_.toDouble)
+      newRp  <- newImage.get("rankPoint").flatMap(v => Option(v.getN)).map(_.toDouble)
+      diff   <- Some(newRp - oldRp).filter(0.0 < _)
+      player =  newImage.get("name").flatMap(v => Option(v.getN))
+        .orElse(oldImage.get("name").flatMap(v => Option(v.getN)))
+        .filter(!_.isEmpty)
+        .getOrElse("???")
     } yield {
-      "[cbRev - RP was updated!]\n%.2f → %.2f (%+.2f)" format (oldRp, newRp, diff)
+      s"[cbRev - RP was updated!]\nPlayer: %s\n%.2f → %.2f (%+.2f)" format (player, oldRp, newRp, diff)
     }
   }
 
