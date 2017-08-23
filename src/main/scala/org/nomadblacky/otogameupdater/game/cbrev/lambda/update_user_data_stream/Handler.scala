@@ -29,6 +29,8 @@ object Handler {
       oldImage <- Option(record.getOldImage)
       newImage <- Option(record.getNewImage)
     } {
+      logger.log(s"oldImage: $oldImage")
+      logger.log(s"newImage: $newImage")
       getTweetText(oldImage.asScala, newImage.asScala).foreach(invokeTweeting)
     }
   }
@@ -72,9 +74,10 @@ class Handler extends RequestHandler[DynamodbEvent, Response] {
   override def handleRequest(input: DynamodbEvent, context: Context): Response = {
     implicit val logger: LambdaLogger = context.getLogger
 
-    logger.log(input.toString)
-
-    input.getRecords.asScala.map(_.getDynamodb).foreach(eachRecord)
+    input.getRecords.asScala.map(_.getDynamodb).foreach { r =>
+      logger.log(r.toString)
+      eachRecord(r)
+    }
 
     Response("OK", input)
   }
