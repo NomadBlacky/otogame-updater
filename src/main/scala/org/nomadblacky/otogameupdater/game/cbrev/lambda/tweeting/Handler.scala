@@ -41,6 +41,8 @@ class Handler extends RequestHandler[Request, Response] {
   override def handleRequest(input: Request, context: Context): Response = {
     val tokens = Tokens.fromEnv()
 
+    context.getLogger.log(input.toString)
+
     val restClient = TwitterRestClient(
       ConsumerToken(tokens.consumerKey, tokens.consumerSecret),
       AccessToken(tokens.accessToken, tokens.accessTokenSecret)
