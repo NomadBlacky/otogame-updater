@@ -65,6 +65,10 @@ functions:
             Fn::GetAtt:
               - cbrevRankPointDynamoDbTable
               - StreamArn
+    environment:
+      TWEETING_FUNCTION_NAME: ${self:service}-${opt:stage}-tweeting
+    
+
   tweeting:
     handler: org.nomadblacky.otogameupdater.game.cbrev.lambda.tweeting.Handler
     environment: ${file(./.envVarTweeting.yml)}

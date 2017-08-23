@@ -5,6 +5,8 @@ import com.amazonaws.services.lambda.AWSLambdaAsyncClientBuilder
 import com.amazonaws.services.lambda.model.InvokeRequest
 import com.amazonaws.services.lambda.runtime.events.DynamodbEvent
 import com.amazonaws.services.lambda.runtime.{Context, LambdaLogger, RequestHandler}
+import org.json4s.DefaultFormats
+import org.json4s.native.Serialization
 
 import scala.beans.BeanProperty
 import scala.collection.JavaConverters._
@@ -16,8 +18,11 @@ case class Response(
 
 object Handler {
   val envName = "TWEETING_FUNCTION_NAME"
+
   lazy val functionName: String =
     sys.env.getOrElse(envName, throw new IllegalStateException(s"ENV '$envName' is not found."))
+
+  implicit val jsonFormats: DefaultFormats.type = org.json4s.DefaultFormats
 
   def eachRecord(record: StreamRecord)(implicit logger: LambdaLogger): Unit = {
     for {
@@ -44,11 +49,20 @@ object Handler {
   def invokeTweeting(text: String)(implicit logger: LambdaLogger): Unit = {
     val lambda = AWSLambdaAsyncClientBuilder.defaultClient()
 
-    val invokeRequest = new InvokeRequest
-    invokeRequest.setFunctionName(functionName)
-    invokeRequest.setPayload(s"""{"text":"$text"}""")
+    val payload = getPayload(Map("text" -> text))
 
-    lambda.invokeAsync(invokeRequest)
+    logger.log(s"FunctionName: $functionName")
+    logger.log(s"Payload: $payload")
+
+    val invokeRequest = new InvokeRequest()
+      .withFunctionName(functionName)
+      .withPayload(payload)
+
+    lambda.invoke(invokeRequest)
+  }
+
+  def getPayload(map: Map[String, Any]): String = {
+    Serialization.write(map)
   }
 }
 
@@ -57,6 +71,8 @@ class Handler extends RequestHandler[DynamodbEvent, Response] {
 
   override def handleRequest(input: DynamodbEvent, context: Context): Response = {
     implicit val logger: LambdaLogger = context.getLogger
+
+    logger.log(input.toString)
 
     input.getRecords.asScala.map(_.getDynamodb).foreach(eachRecord)
 

@@ -27,4 +27,8 @@ class HandlerTest extends FunSuite with Matchers {
   )
 
   forAll(fixtures)(getTweetText(_, _) shouldBe _)
+
+  test("testGetPayload") {
+    getPayload(Map("text" -> "hoge\nfoo")) shouldBe """{"text":"hoge\nfoo"}"""
+  }
 }
