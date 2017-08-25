@@ -10,8 +10,8 @@ This program post the update of rhythm game scores to SNS.
   - [x] Login to MyPage by HTTP Client
 - [Feature] Tweeting
   - [Lambda] Tweeting
-	- [ ] Configure tokens from environment variables
-	- [ ] Tweet from events
+	- [x] Configure tokens from environment variables
+	- [x] Tweet from events
 - [Feature] Update user data
   - [Lambda] UpdateUserData
 	- [x] Fetch user data
@@ -19,9 +19,9 @@ This program post the update of rhythm game scores to SNS.
 	- [x] Insert user data to DynamoDB
   - [Lambda] UpdateUserDataStream
 	- [x] Configure DynamoDB streams
-	- [ ] Receive streams
+	- [x] Receive streams
 	- If RankPoint is rising
-	  - [ ] Tweet it
+	  - [x] Tweet it
   - Execute `UpdateUserData` from triggers
 	- [x] Execute regularly by CloudWatch
 	- [ ] Execute manually by API Gateway
