@@ -43,8 +43,8 @@ object Handler {
       oldRp  <- oldImage.get("rankPoint").flatMap(v => Option(v.getN)).map(_.toDouble)
       newRp  <- newImage.get("rankPoint").flatMap(v => Option(v.getN)).map(_.toDouble)
       diff   <- Some(newRp - oldRp).filter(0.0 < _)
-      player =  newImage.get("name").flatMap(v => Option(v.getN))
-        .orElse(oldImage.get("name").flatMap(v => Option(v.getN)))
+      player =  newImage.get("name").flatMap(v => Option(v.getS))
+        .orElse(oldImage.get("name").flatMap(v => Option(v.getS)))
         .filter(!_.isEmpty)
         .getOrElse("???")
     } yield {

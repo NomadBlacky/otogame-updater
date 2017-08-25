@@ -12,7 +12,7 @@ class HandlerTest extends FunSuite with Matchers {
 
   def image(name: String, rp: Double): Image = {
     Map(
-      "name"      -> new AttributeValue().withN(name),
+      "name"      -> new AttributeValue().withS(name),
       "rankPoint" -> new AttributeValue().withN(rp.toString)
     )
   }
