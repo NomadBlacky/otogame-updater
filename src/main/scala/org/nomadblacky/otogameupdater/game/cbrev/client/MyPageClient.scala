@@ -8,7 +8,7 @@ import org.nomadblacky.otogameupdater.game.cbrev.model.{MusicInList, UserData}
 import scalaj.http._
 
 
-class MyPageClient(val accessCode: String, val password: String) {
+case class MyPageClient(accessCode: String, password: String) {
 
   val browser: Browser = JsoupBrowser()
 
@@ -35,7 +35,3 @@ class MyPageClient(val accessCode: String, val password: String) {
   )
 }
 
-object MyPageClient {
-  def apply(accessCode: String, password: String): MyPageClient =
-    new MyPageClient(accessCode, password)
-}
