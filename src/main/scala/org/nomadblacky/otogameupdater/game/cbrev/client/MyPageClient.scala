@@ -33,5 +33,11 @@ case class MyPageClient(accessCode: String, password: String) {
       .asString
       .body
   )
-}
 
+  def exchangeMusicEnergy: ExchangeResult = extract[ExchangeResult](
+    Http("https://rev-srw.ac.capcom.jp/musicenergyexc")
+      .cookie(loginCookie)
+      .asString
+      .body
+  )
+}

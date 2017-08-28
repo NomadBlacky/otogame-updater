@@ -44,4 +44,12 @@ package object client {
       })
     }
   }
+
+  implicit object ExchangeResultExtractor extends Extractor[ExchangeResult] {
+    override def extract(htmlBody: String, browser: Browser): ExchangeResult = {
+      val message = browser.parseString(htmlBody)
+        .extract(extractor("#login > div > div > div > div > p", text))
+      ExchangeResult(message)
+    }
+  }
 }
