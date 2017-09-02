@@ -35,10 +35,20 @@ case class MyPageClient(accessCode: String, password: String) {
       .body
   )
 
-  def exchangeMusicEnergy: ExchangeResult = extract[ExchangeResult](
-    Http("https://rev-srw.ac.capcom.jp/musicenergyexc")
-      .cookie(loginCookie)
-      .asString
-      .body
-  )
+  def exchangeMusicEnergy: ExchangeResult = {
+    val token = extract[ExchangeToken](
+      Http("https://rev-srw.ac.capcom.jp/musicenergy")
+        .cookie(loginCookie)
+        .asString
+        .body
+    )
+
+    extract[ExchangeResult](
+      Http("https://rev-srw.ac.capcom.jp/musicenergyexc")
+        .postForm(Seq(("csrf_token", token.asString)))
+        .cookie(loginCookie)
+        .asString
+        .body
+    )
+  }
 }

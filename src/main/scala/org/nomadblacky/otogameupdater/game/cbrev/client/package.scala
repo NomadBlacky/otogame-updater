@@ -52,4 +52,12 @@ package object client {
       ExchangeResult(message)
     }
   }
+
+  implicit object ExchangeTokenExtractor extends Extractor[ExchangeToken] {
+    override def extract(htmlBody: String, browser: Browser): ExchangeToken = {
+      val token = browser.parseString(htmlBody)
+        .extract(extractor("#form_csrf_token", attr("value")))
+      ExchangeToken(token)
+    }
+  }
 }
