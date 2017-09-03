@@ -47,17 +47,13 @@ package object client {
 
   implicit object ExchangeResultExtractor extends Extractor[ExchangeResult] {
     override def extract(htmlBody: String, browser: Browser): ExchangeResult = {
-      val message = browser.parseString(htmlBody)
-        .extract(extractor("#login > div > div > div > div > p", text))
+      val doc = browser.parseString(htmlBody)
+      val message = doc
+        .tryExtract(extractor("#login > div > div > div > div > p", text))
+        .getOrElse(
+          doc.extract(extractor("#profile > div > div.blockRight > div > div > div", text))
+        )
       ExchangeResult(message)
-    }
-  }
-
-  implicit object ExchangeTokenExtractor extends Extractor[ExchangeToken] {
-    override def extract(htmlBody: String, browser: Browser): ExchangeToken = {
-      val token = browser.parseString(htmlBody)
-        .extract(extractor("#form_csrf_token", attr("value")))
-      ExchangeToken(token)
     }
   }
 }
