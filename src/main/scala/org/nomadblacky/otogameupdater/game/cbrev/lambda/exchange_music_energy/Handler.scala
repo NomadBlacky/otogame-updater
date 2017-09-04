@@ -14,7 +14,7 @@ case class Request(
 
 case class Response(
   @BeanProperty message: String,
-  @BeanProperty result: ExchangeResult
+  @BeanProperty result: Option[ExchangeResult]
 )
 
 class Handler extends RequestHandler[Request, Response] {
@@ -25,7 +25,10 @@ class Handler extends RequestHandler[Request, Response] {
     logger.log(s"input: $input")
 
     val client = MyPageClient(input.accessCode, input.password)
-    val result = client.exchangeMusicEnergy
+    val result = client
+      .fetchExchangeToken
+      .map(client.exchangeMusicEnergy)
+
     logger.log(s"result: $result")
 
     Response("OK", result)
