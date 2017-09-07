@@ -17,38 +17,34 @@ case class MyPageClient(accessCode: String, password: String) {
     Http("https://rev-srw.ac.capcom.jp/webloginconfirm")
       .postForm(Seq(("ac", accessCode), ("passwd", password)))
       .asString
-      .cookies
-      .find(_.getName == "_rst")
+      .extract(loginCookieExtractor)
       .getOrElse(loginException())
 
-  def fetchUserData: UserData = extract[UserData](
+  def fetchUserData: UserData =
     Http("https://rev-srw.ac.capcom.jp/profile")
       .cookie(loginCookie)
       .asString
-      .body
-  )
+      .extract(userDataExtractor)
 
-  def fetchMusics: Seq[MusicInList] = extract[Seq[MusicInList]](
+  def fetchMusics: Seq[MusicInList] =
     Http("https://rev-srw.ac.capcom.jp/playdatamusic")
       .cookie(loginCookie)
       .asString
-      .body
-  )
+      .extract(musicListExtractor)
+
 
   def fetchExchangeToken: Option[ExchangeToken] =
     Http("https://rev-srw.ac.capcom.jp/musicenergy")
       .cookie(loginCookie)
       .asString
-      .cookies
-      .find(_.getName == "csrf_token")
-      .map(ExchangeToken)
+      .extract(exchangeTokenExtractor)
 
-  def exchangeMusicEnergy(token: ExchangeToken): ExchangeResult = extract[ExchangeResult](
+  def exchangeMusicEnergy(token: ExchangeToken): ExchangeResult =
     Http("https://rev-srw.ac.capcom.jp/musicenergyexc")
       .postForm(Seq(token.pair))
       .cookies(Seq(loginCookie, token.cookie))
       .option(HttpOptions.followRedirects(true))
       .asString
-      .body
-  )
+      .extract(exchangeResultExtractor)
+
 }
