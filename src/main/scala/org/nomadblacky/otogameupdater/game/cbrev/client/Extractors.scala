@@ -6,7 +6,8 @@ import net.ruippeixotog.scalascraper.browser.{Browser, JsoupBrowser}
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{attr, element, elementList, text}
 import net.ruippeixotog.scalascraper.scraper.ContentParsers.{asDouble, asInt, regexMatch}
-import org.nomadblacky.otogameupdater.game.cbrev.model.{MusicInList, UserData}
+import org.nomadblacky.otogameupdater.game.cbrev.model.Difficulties.Easy
+import org.nomadblacky.otogameupdater.game.cbrev.model._
 
 import scala.util.matching.Regex
 import scalaj.http.HttpResponse
@@ -67,4 +68,30 @@ trait Extractors {
     ExchangeResult(message)
   }
 
+  val musicPlayDataExtractor: Extractor[String, MusicPlayData] = (response, browser) => {
+    def extractMusicDetail(doc: browser.DocumentType): MusicDetail = {
+      val title = doc
+        .extract(element("#profile > div > div.blockRight > div > div > div > div.pdMusicDetail.gr-Black > div > p.title"))
+        .extract(text)
+      val artist = doc
+        .extract(element("#profile > div > div.blockRight > div > div > div > div.pdMusicDetail.gr-Black > div > p.author"))
+        .extract(text)
+      val bpm = doc
+        .extract(extractor(
+          "#profile > div > div.blockRight > div > div > div > div.pdMusicDetail.gr-Black > div > p.bpm",
+          text,
+          regexMatch("""BPM\w*(\d+\.?\d*)""").captured.andThen(_.toDouble)
+        ))
+      MusicDetail(title, artist, bpm)
+    }
+    def extractPlayScores(doc: browser.DocumentType): Map[Difficulty, PlayScore] = {
+
+      Map(
+        Easy -> PlayScore(Stage(Easy, 0, 0), 0, 0.0, None, None, None, fullCombo = false)
+      )
+    }
+
+    val doc: browser.DocumentType = browser.parseString(response.body)
+    MusicPlayData(extractMusicDetail(doc), extractPlayScores(doc))
+  }
 }

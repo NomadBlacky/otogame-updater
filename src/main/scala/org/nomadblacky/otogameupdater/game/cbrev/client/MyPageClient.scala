@@ -46,5 +46,4 @@ case class MyPageClient(accessCode: String, password: String) {
       .option(HttpOptions.followRedirects(true))
       .asString
       .extract(exchangeResultExtractor)
-
 }
