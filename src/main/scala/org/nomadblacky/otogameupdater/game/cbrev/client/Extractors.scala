@@ -6,7 +6,7 @@ import net.ruippeixotog.scalascraper.browser.{Browser, JsoupBrowser}
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{attr, element, elementList, text}
 import net.ruippeixotog.scalascraper.scraper.ContentParsers.{asDouble, asInt, regexMatch}
-import org.nomadblacky.otogameupdater.game.cbrev.model.Difficulties.Easy
+import org.nomadblacky.otogameupdater.game.cbrev.model.Difficulty._
 import org.nomadblacky.otogameupdater.game.cbrev.model._
 
 import scala.util.matching.Regex

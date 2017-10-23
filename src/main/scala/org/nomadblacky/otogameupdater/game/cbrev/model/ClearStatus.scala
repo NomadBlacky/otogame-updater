@@ -3,16 +3,10 @@ package org.nomadblacky.otogameupdater.game.cbrev.model
 /**
   * Created by blacky on 17/07/19.
   */
-sealed trait ClearStatus
+object ClearStatus extends Enumeration {
 
-object ClearStatuses {
+  type ClearStatus = Value
 
-  object Failed extends ClearStatus
-
-  object Cleared extends ClearStatus
-
-  object Survival extends ClearStatus
-
-  object Ultimate extends ClearStatus
+  val Failed, Cleared, Survival, Ultimate = Value
 
 }

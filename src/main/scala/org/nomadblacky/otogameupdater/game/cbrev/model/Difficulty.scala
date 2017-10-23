@@ -3,18 +3,10 @@ package org.nomadblacky.otogameupdater.game.cbrev.model
 /**
   * Created by blacky on 17/07/19.
   */
-sealed trait Difficulty
+object Difficulty extends Enumeration {
 
-object Difficulties {
+  type Difficulty = Value
 
-  object Easy extends Difficulty
-
-  object Standard extends Difficulty
-
-  object Hard extends Difficulty
-
-  object Master extends Difficulty
-
-  object Unlimited extends Difficulty
+  val Easy, Standard, Hard, Master, Unlimited = Value
 
 }
