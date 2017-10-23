@@ -80,7 +80,7 @@ trait Extractors {
         .extract(extractor(
           "#profile > div > div.blockRight > div > div > div > div.pdMusicDetail.gr-Black > div > p.bpm",
           text,
-          regexMatch("""BPM\w*(\d+\.?\d*)""").captured.andThen(_.toDouble)
+          regexMatch("""BPM\s*(\d+\.?\d*)""").captured.andThen(_.toDouble)
         ))
       MusicDetail(title, artist, bpm)
     }
