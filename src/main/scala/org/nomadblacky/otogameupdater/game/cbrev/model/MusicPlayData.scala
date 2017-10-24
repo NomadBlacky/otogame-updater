@@ -1,8 +1,8 @@
 package org.nomadblacky.otogameupdater.game.cbrev.model
 
-import org.nomadblacky.otogameupdater.game.cbrev.model.Difficulty.Difficulty
+import org.nomadblacky.otogameupdater.game.cbrev.model.Difficulty.DifficultyVal
 
 case class MusicPlayData(
   musicInList: MusicDetail,
-  playScores: Map[Difficulty, PlayScore]
+  playScores: Map[DifficultyVal, PlayScore]
 )

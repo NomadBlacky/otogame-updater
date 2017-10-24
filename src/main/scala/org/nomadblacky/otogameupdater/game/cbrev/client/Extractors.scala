@@ -84,11 +84,21 @@ trait Extractors {
         ))
       MusicDetail(title, artist, bpm)
     }
-    def extractPlayScores(doc: browser.DocumentType): Map[Difficulty, PlayScore] = {
-
-      Map(
-        Easy -> PlayScore(Stage(Easy, 0, 0), 0, 0.0, None, None, None, fullCombo = false)
-      )
+    def extractPlayScores(doc: browser.DocumentType): Map[DifficultyVal, PlayScore] = {
+      val scoreDivs = doc >> elementList("#profile > div > div.blockRight > div > div > div > div.pdm-result")
+      scoreDivs.map { e =>
+        val difficultyStr = e >> extractor("div > div.pdm-resultHead", attr("class"), regexMatch("""pdm-resultHead\s+(\w+)""").captured)
+        val difficulty = Difficulty.valueSet
+          .find(_.name.toLowerCase == difficultyStr)
+          .getOrElse(throw new IllegalStateException("element not found."))
+        val stage = Stage(
+          difficulty, 0, 0
+        )
+        val playScore = PlayScore(
+          stage, 0, 0.0, None, None, None, fullCombo = false
+        )
+        (difficulty, playScore)
+      }.toMap
     }
 
     val doc: browser.DocumentType = browser.parseString(response.body)
