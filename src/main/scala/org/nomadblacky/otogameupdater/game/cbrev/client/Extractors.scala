@@ -92,7 +92,9 @@ trait Extractors {
           .find(_.name.toLowerCase == difficultyStr)
           .getOrElse(throw new IllegalStateException("element not found."))
         val stage = Stage(
-          difficulty, 0, 0
+          difficulty,
+          e >> extractor("div > div.pdm-resultHead > p.lv", text, regexMatch("""Lv\.\s*(\d+)""").captured.andThen(_.toInt)),
+          e >> extractor("div > div.pdm-resultHead > p.note", text, regexMatch("""Note:\s*(\d+)""").captured.andThen(_.toInt))
         )
         val playScore = PlayScore(
           stage, 0, 0.0, None, None, None, fullCombo = false
