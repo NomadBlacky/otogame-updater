@@ -1,32 +1,47 @@
 package org.nomadblacky.otogameupdater.game.cbrev.model
 
+import scala.collection.SortedSet
+
 /**
   * Created by blacky on 17/07/19.
   */
-trait Grade
+sealed abstract class Grade(val id: String, val displayName: String)
 
 object Grades {
 
-  object GradeF extends Grade
+  object GradeSpp extends Grade("0", "S++")
 
-  object GradeE extends Grade
+  object GradeSp extends Grade("1", "S+")
 
-  object GradeD extends Grade
+  object GradeS extends Grade("2", "S")
 
-  object GradeC extends Grade
+  object GradeAp extends Grade("3", "A+")
 
-  object GradeB extends Grade
+  object GradeA extends Grade("4", "A")
 
-  object GradeBp extends Grade
+  object GradeBp extends Grade("5", "B+")
 
-  object GradeA extends Grade
+  object GradeB extends Grade("6", "B")
 
-  object GradeAp extends Grade
+  object GradeC extends Grade("7", "C")
 
-  object GradeS extends Grade
+  object GradeD extends Grade("8", "D")
 
-  object GradeSp extends Grade
+  object GradeE extends Grade("9", "E")
 
-  object GradeSpp extends Grade
+  object GradeF extends Grade("10", "F")
 
+  val values = Set(
+    GradeSpp,
+    GradeSp,
+    GradeS,
+    GradeAp,
+    GradeA,
+    GradeBp,
+    GradeB,
+    GradeC,
+    GradeD,
+    GradeE,
+    GradeF
+  )
 }

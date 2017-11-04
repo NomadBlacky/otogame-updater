@@ -4,9 +4,10 @@ import java.net.HttpCookie
 
 import net.ruippeixotog.scalascraper.browser.{Browser, JsoupBrowser}
 import net.ruippeixotog.scalascraper.dsl.DSL._
-import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{attr, element, elementList, text}
-import net.ruippeixotog.scalascraper.scraper.ContentParsers.{asDouble, asInt, regexMatch}
-import org.nomadblacky.otogameupdater.game.cbrev.model.Difficulties.Easy
+import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
+import net.ruippeixotog.scalascraper.dsl.DSL.Parse._
+import org.nomadblacky.otogameupdater.game.cbrev.model.ClearStatuses.{Cleared, Failed}
+import org.nomadblacky.otogameupdater.game.cbrev.model.Grades.GradeF
 import org.nomadblacky.otogameupdater.game.cbrev.model._
 
 import scala.util.matching.Regex
@@ -92,12 +93,43 @@ trait Extractors {
           .find(_.name.toLowerCase == difficultyStr)
           .getOrElse(throw new IllegalStateException("element not found."))
         val stage = Stage(
-          difficulty,
-          e >> extractor("div > div.pdm-resultHead > p.lv", text, regexMatch("""Lv\.\s*(\d+)""").captured.andThen(_.toInt)),
-          e >> extractor("div > div.pdm-resultHead > p.note", text, regexMatch("""Note:\s*(\d+)""").captured.andThen(_.toInt))
+          difficulty = difficulty,
+          level = e >> extractor("div > div.pdm-resultHead > p.lv", text, regexMatch("""Lv\.\s*(\d+)""").captured.andThen(_.toInt)),
+          notes = e >> extractor("div > div.pdm-resultHead > p.note", text, regexMatch("""Note:\s*(\d+)""").captured.andThen(_.toInt))
         )
+        val clearRatePaser: (String => Double) =
+          """(\d+\.?\d*)%""".r.findFirstMatchIn(_).map(_.subgroups.head).getOrElse("0.0").toDouble
+        val rankPointPaser: (String => Option[Double]) =
+          """(\d+\.?\d*)""".r.findFirstMatchIn(_).map(_.subgroups.head.toDouble)
+        val maybeGrade = e.extract(extractor(
+          "div > div.rightResult > ul.pdResultIco > li.grade > img",
+          attr("src"),
+          regexMatch("""grade_(\d+)\.png""")
+            .captured
+            .andThen(s => Grades.values.find(_.id == s))
+        ))
+        val clearStatus: Option[ClearStatus] = e.tryExtract(extractor(
+          "div > div.rightResult > ul > li.clear > p > img",
+          attr("src"),
+          regexMatch("""bnr_(\w+)_CLEAR\.png""")
+            .captured
+            .andThen(s => ClearStatuses.values.find(_.displayName.toUpperCase == s).get)
+        )).orElse {
+          maybeGrade match {
+            case Some(g) if g == GradeF => Some(Failed)
+            case Some(_)                => Some(Cleared)
+            case None                   => None
+          }
+        }
+
         val playScore = PlayScore(
-          stage, 0, 0.0, None, None, None, fullCombo = false
+          stage       = stage,
+          highScore   = e >> extractor("div > div.leftResult > dl > dd:nth-child(2)", text, asInt),
+          clearRate   = e >> extractor("div > div.leftResult > dl > dd:nth-child(4)", text, clearRatePaser),
+          rankPoint   = e >> extractor("div > div.leftResult > dl > dd:nth-child(6)", text, rankPointPaser),
+          clearStatus = clearStatus,
+          grade       = maybeGrade,
+          fullCombo   = (e >?> element("div > div.rightResult > ul > li.fullcombo > span")).isDefined
         )
         (difficulty, playScore)
       }.toMap
