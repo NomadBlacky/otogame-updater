@@ -6,7 +6,7 @@ import net.ruippeixotog.scalascraper.browser.{Browser, JsoupBrowser}
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{attr, element, elementList, text}
 import net.ruippeixotog.scalascraper.scraper.ContentParsers.{asDouble, asInt, regexMatch}
-import org.nomadblacky.otogameupdater.game.cbrev.model.Difficulty._
+import org.nomadblacky.otogameupdater.game.cbrev.model.Difficulties.Easy
 import org.nomadblacky.otogameupdater.game.cbrev.model._
 
 import scala.util.matching.Regex
@@ -84,11 +84,11 @@ trait Extractors {
         ))
       MusicDetail(title, artist, bpm)
     }
-    def extractPlayScores(doc: browser.DocumentType): Map[DifficultyVal, PlayScore] = {
+    def extractPlayScores(doc: browser.DocumentType): Map[Difficulty, PlayScore] = {
       val scoreDivs = doc >> elementList("#profile > div > div.blockRight > div > div > div > div.pdm-result")
       scoreDivs.map { e =>
         val difficultyStr = e >> extractor("div > div.pdm-resultHead", attr("class"), regexMatch("""pdm-resultHead\s+(\w+)""").captured)
-        val difficulty = Difficulty.valueSet
+        val difficulty = Difficulties.valueSet
           .find(_.name.toLowerCase == difficultyStr)
           .getOrElse(throw new IllegalStateException("element not found."))
         val stage = Stage(

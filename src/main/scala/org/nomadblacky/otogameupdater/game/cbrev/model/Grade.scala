@@ -3,10 +3,30 @@ package org.nomadblacky.otogameupdater.game.cbrev.model
 /**
   * Created by blacky on 17/07/19.
   */
-object Grade extends Enumeration {
+trait Grade
 
-  type Grade = Value
+object Grades {
 
-  val GradeF, GradeE, GradeD, GradeC, GradeB, GradeBp = Value
-  val GradeA, GradeAp, GradeS, GradeSp, GradeSpp = Value
+  object GradeF extends Grade
+
+  object GradeE extends Grade
+
+  object GradeD extends Grade
+
+  object GradeC extends Grade
+
+  object GradeB extends Grade
+
+  object GradeBp extends Grade
+
+  object GradeA extends Grade
+
+  object GradeAp extends Grade
+
+  object GradeS extends Grade
+
+  object GradeSp extends Grade
+
+  object GradeSpp extends Grade
+
 }

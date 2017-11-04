@@ -1,9 +1,9 @@
 package org.nomadblacky.otogameupdater.game.cbrev.client
 
-import org.nomadblacky.otogameupdater.game.cbrev.model.ClearStatus._
-import org.nomadblacky.otogameupdater.game.cbrev.model.Difficulty._
-import org.nomadblacky.otogameupdater.game.cbrev.model.Grade._
 import org.nomadblacky.otogameupdater.game.cbrev.model._
+import org.nomadblacky.otogameupdater.game.cbrev.model.Difficulties._
+import org.nomadblacky.otogameupdater.game.cbrev.model.ClearStatuses._
+import org.nomadblacky.otogameupdater.game.cbrev.model.Grades._
 import org.scalatest.{FunSuite, Matchers}
 
 import scala.io.Source
