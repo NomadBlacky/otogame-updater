@@ -2,7 +2,7 @@ package org.nomadblacky.otogameupdater.game.cbrev.client
 
 import java.net.HttpCookie
 
-import org.nomadblacky.otogameupdater.game.cbrev.model.{MusicInList, UserData}
+import org.nomadblacky.otogameupdater.game.cbrev.model.{MusicInList, MusicPlayData, UserData}
 
 import scalaj.http._
 
@@ -32,6 +32,10 @@ case class MyPageClient(accessCode: String, password: String) {
       .asString
       .extract(musicListExtractor)
 
+  def fetchMusicPlayData(musics: Seq[MusicInList]): Seq[MusicPlayData] =
+    musics
+      .flatMap(_.detailUrl)
+      .map(Http(_).cookie(loginCookie).asString.extract(musicPlayDataExtractor))
 
   def fetchExchangeToken: Option[ExchangeToken] =
     Http("https://rev-srw.ac.capcom.jp/musicenergy")
