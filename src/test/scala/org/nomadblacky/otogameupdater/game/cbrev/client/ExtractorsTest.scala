@@ -111,4 +111,35 @@ class ExtractorsTest extends FunSuite with Matchers {
     val actual = extractFullCombo(playScoreBody01)
     actual shouldBe true
   }
+
+
+  private val musicDetailHtml01: String =
+    """<div class="pdMusicDetail gr-Black">
+      |    <img class="pdm-jkt" src="https://rev-srw.ac.capcom.jp/assets/common/img_contents/2/Here_comes_the_sun_For_you.png?1462847149" alt="" />                            <div class="pdm-txt">
+      |        <p class="title">
+      |            Here comes the sun ~For you~                                </p>
+      |        <p class="author">
+      |            Z pinkpong                                </p>
+      |        <p class="bpm"><span><img src="https://rev-srw.ac.capcom.jp/assets/common/img_common/list_header1.gif?1443581577" alt="" />BPM</span>
+      |            130                                </p>
+      |    </div>
+      |</div>
+    """.stripMargin
+
+  private lazy val musicDetailBody01: Element = JsoupBrowser().parseString(musicDetailHtml01).body
+
+  test("extractTitle01") {
+    val actual = extractTitle(musicDetailBody01)
+    actual shouldBe "Here comes the sun ~For you~"
+  }
+
+  test("extractArtist01") {
+    val actual = extractArtist(musicDetailBody01)
+    actual shouldBe "Z pinkpong"
+  }
+
+  test("extractBpm01") {
+    val actual = extractBpm(musicDetailBody01)
+    actual shouldBe 130
+  }
 }

@@ -155,18 +155,24 @@ trait Extractors {
 
 
   private def extractMusicDetail(doc: Document): MusicDetail = {
-    val title = doc
-      .extract(element("#profile > div > div.blockRight > div > div > div > div.pdMusicDetail.gr-Black > div > p.title"))
-      .extract(text)
-    val artist = doc
-      .extract(element("#profile > div > div.blockRight > div > div > div > div.pdMusicDetail.gr-Black > div > p.author"))
-      .extract(text)
-    val bpm = doc
-      .extract(extractor(
-        "#profile > div > div.blockRight > div > div > div > div.pdMusicDetail.gr-Black > div > p.bpm",
-        text,
-        regexMatch("""BPM\s*(\d+\.?\d*)""").captured.andThen(_.toDouble)
-      ))
-    MusicDetail(title, artist, bpm)
+    val e = doc >> element("#profile > div > div.blockRight > div > div > div > div.pdMusicDetail.gr-Black")
+    MusicDetail(
+      title  = extractTitle(e),
+      artist = extractArtist(e),
+      bpm    = extractBpm(e)
+    )
   }
+
+  private[client] def extractTitle(e: Element): String =
+    e >> element("div > div > p.title") >> text
+
+  private[client] def extractArtist(e: Element): String =
+    e >> element("div > div > p.author") >> text
+
+  private[client] def extractBpm(e: Element): Double =
+    e >> extractor(
+      "div > div > p.bpm",
+      text,
+      regexMatch("""BPM\s*(\d+\.?\d*)""").captured.andThen(_.toDouble)
+    )
 }
