@@ -1,9 +1,11 @@
 package org.nomadblacky.otogameupdater.game.cbrev.client
 
-import org.nomadblacky.otogameupdater.game.cbrev.model._
+import net.ruippeixotog.scalascraper.browser.JsoupBrowser
+import net.ruippeixotog.scalascraper.model.Element
+import org.nomadblacky.otogameupdater.game.cbrev.model.ClearStatuses.Ultimate
 import org.nomadblacky.otogameupdater.game.cbrev.model.Difficulties._
-import org.nomadblacky.otogameupdater.game.cbrev.model.ClearStatuses._
-import org.nomadblacky.otogameupdater.game.cbrev.model.Grades._
+import org.nomadblacky.otogameupdater.game.cbrev.model.Grades.GradeSpp
+import org.nomadblacky.otogameupdater.game.cbrev.model._
 import org.scalatest.{FunSuite, Matchers}
 
 import scala.io.Source
@@ -11,7 +13,7 @@ import scalaj.http.HttpResponse
 
 class ExtractorsTest extends FunSuite with Matchers {
 
-  def buildHttpResponse(resourceFileName: String): HttpResponse[String] = {
+  private def buildHttpResponse(resourceFileName: String): HttpResponse[String] = {
     val html = Source.fromURL(getClass.getResource(resourceFileName)).mkString
     HttpResponse(html, 200, null)
   }
@@ -30,64 +32,83 @@ class ExtractorsTest extends FunSuite with Matchers {
     exchangeResult shouldBe ExchangeResult("ミュージックエナジー 300MEを プレミアムチケット 15枚に変換しました！")
   }
 
-  test("musicPlayDataExtractor") {
-    val result =
-      buildHttpResponse("music_play_data_extractor_01.html")
-      .extract(musicPlayDataExtractor)
-    val expect = MusicPlayData(
-      musicInList = MusicDetail(
-        title = "Here comes the sun ~For you~",
-        artist = "Z pinkpong",
-        bpm = 130
-      ),
-      Map(
-        Easy -> PlayScore(
-          stage = Stage(Easy, 11, 83),
-          highScore = 0,
-          clearRate = 0.0,
-          rankPoint = None,
-          clearStatus = None,
-          grade = None,
-          fullCombo = false
-        ),
-        Standard -> PlayScore(
-          stage = Stage(Standard, 16, 119),
-          highScore = 0,
-          clearRate = 0.0,
-          rankPoint = None,
-          clearStatus = None,
-          grade = None,
-          fullCombo = false
-        ),
-        Hard -> PlayScore(
-          stage = Stage(Hard, 51, 285),
-          highScore = 0,
-          clearRate = 0.0,
-          rankPoint = None,
-          clearStatus = None,
-          grade = None,
-          fullCombo = false
-        ),
-        Master -> PlayScore(
-          stage = Stage(Master, 51, 285),
-          highScore = 27680,
-          clearRate = 99.71,
-          rankPoint = Some(60.58),
-          clearStatus = Some(Ultimate),
-          grade = Some(GradeSpp),
-          fullCombo = true
-        ),
-        Unlimited -> PlayScore(
-          stage = Stage(Unlimited, 68, 478),
-          highScore = 41150,
-          clearRate = 87.9,
-          rankPoint = Some(65.07),
-          clearStatus = Some(Survival),
-          grade = Some(GradeSp),
-          fullCombo = false
-        ),
-      )
+  private val playScoreHtml01: String =
+    """<div class="pdm-result">
+      |    <div class="pdm-resultHead master">
+      |        <img class="pdm-diff" src="https://rev-srw.ac.capcom.jp/assets/common/img_common/bnr_difficulty_master.jpg?1462847149" alt="" />                                <p class="lv"><span><img src="https://rev-srw.ac.capcom.jp/assets/common/img_common/parts_corner_bl_re.gif?1443581577" alt="" />Lv.</span>
+      |            51                                </p>
+      |        <p class="note"><span>Note:</span>
+      |            285                                </p>
+      |    </div>
+      |
+      |    <div class="leftResult">
+      |        <dl class="pdResultList">
+      |            <dt>HIGHSCORE</dt>
+      |            <dd>
+      |                27680                                    </dd>
+      |            <dt>CLEAR RATE</dt>
+      |            <dd>
+      |                99.71%</dd>
+      |            <dt>RANK POINT</dt>
+      |            <dd>
+      |                60.58                                    </dd>
+      |        </dl>
+      |    </div>
+      |
+      |    <div class="rightResult">
+      |        <ul class="pdResultIco">
+      |            <li class="clear">
+      |                <p>
+      |                    <img src="https://rev-srw.ac.capcom.jp/assets/common/img_common/bnr_ULTIMATE_CLEAR.png?1462847149" alt="" />                                        </p>
+      |            </li>
+      |            <li class="grade">
+      |                <img src="https://rev-srw.ac.capcom.jp/assets/common/img_common/grade_0.png?1462847149" alt="" />                                    </li>
+      |                <li class="fullcombo">
+      |                    <span class="ico-fullcombo"></span>
+      |                </li>
+      |        </ul>
+      |    </div>
+      |</div>
+    """.stripMargin
+
+  private lazy val body01: Element = JsoupBrowser().parseString(playScoreHtml01).body
+
+  test("extractStage01") {
+    val actual = extractStage(body01)
+    actual shouldBe Stage(
+      difficulty = Master,
+      level = 51,
+      notes = 285
     )
-    result shouldBe expect
+  }
+
+  test("extractHighScore01") {
+    val actual = extractHighScore(body01)
+    actual shouldBe 27680
+  }
+
+  test("extractClearRate01") {
+    val actual = extractClearRate(body01)
+    actual shouldBe 99.71
+  }
+
+  test("extractRankPoint01") {
+    val actual = extractRankPoint(body01)
+    actual shouldBe Some(60.58)
+  }
+
+  test("extractClearStatus01") {
+    val actual = extractClearStatus(body01, Some(GradeSpp))
+    actual shouldBe Some(Ultimate)
+  }
+
+  test("extractGrade01") {
+    val actual = extractGrade(body01)
+    actual shouldBe Some(GradeSpp)
+  }
+
+  test("extractFullCombo01") {
+    val actual = extractFullCombo(body01)
+    actual shouldBe true
   }
 }

@@ -3,9 +3,10 @@ package org.nomadblacky.otogameupdater.game.cbrev.client
 import java.net.HttpCookie
 
 import net.ruippeixotog.scalascraper.browser.{Browser, JsoupBrowser}
-import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 import net.ruippeixotog.scalascraper.dsl.DSL.Parse._
+import net.ruippeixotog.scalascraper.dsl.DSL._
+import net.ruippeixotog.scalascraper.model.{Document, Element}
 import org.nomadblacky.otogameupdater.game.cbrev.model.ClearStatuses.{Cleared, Failed}
 import org.nomadblacky.otogameupdater.game.cbrev.model.Grades.GradeF
 import org.nomadblacky.otogameupdater.game.cbrev.model._
@@ -70,72 +71,102 @@ trait Extractors {
   }
 
   val musicPlayDataExtractor: Extractor[String, MusicPlayData] = (response, browser) => {
-    def extractMusicDetail(doc: browser.DocumentType): MusicDetail = {
-      val title = doc
-        .extract(element("#profile > div > div.blockRight > div > div > div > div.pdMusicDetail.gr-Black > div > p.title"))
-        .extract(text)
-      val artist = doc
-        .extract(element("#profile > div > div.blockRight > div > div > div > div.pdMusicDetail.gr-Black > div > p.author"))
-        .extract(text)
-      val bpm = doc
-        .extract(extractor(
-          "#profile > div > div.blockRight > div > div > div > div.pdMusicDetail.gr-Black > div > p.bpm",
-          text,
-          regexMatch("""BPM\s*(\d+\.?\d*)""").captured.andThen(_.toDouble)
-        ))
-      MusicDetail(title, artist, bpm)
-    }
-    def extractPlayScores(doc: browser.DocumentType): Map[Difficulty, PlayScore] = {
-      val scoreDivs = doc >> elementList("#profile > div > div.blockRight > div > div > div > div.pdm-result")
-      scoreDivs.map { e =>
-        val difficultyStr = e >> extractor("div > div.pdm-resultHead", attr("class"), regexMatch("""pdm-resultHead\s+(\w+)""").captured)
-        val difficulty = Difficulties.valueSet
-          .find(_.name.toLowerCase == difficultyStr)
-          .getOrElse(throw new IllegalStateException("element not found."))
-        val stage = Stage(
-          difficulty = difficulty,
-          level = e >> extractor("div > div.pdm-resultHead > p.lv", text, regexMatch("""Lv\.\s*(\d+)""").captured.andThen(_.toInt)),
-          notes = e >> extractor("div > div.pdm-resultHead > p.note", text, regexMatch("""Note:\s*(\d+)""").captured.andThen(_.toInt))
-        )
-        val clearRatePaser: (String => Double) =
-          """(\d+\.?\d*)%""".r.findFirstMatchIn(_).map(_.subgroups.head).getOrElse("0.0").toDouble
-        val rankPointPaser: (String => Option[Double]) =
-          """(\d+\.?\d*)""".r.findFirstMatchIn(_).map(_.subgroups.head.toDouble)
-        val maybeGrade = e.extract(extractor(
-          "div > div.rightResult > ul.pdResultIco > li.grade > img",
-          attr("src"),
-          regexMatch("""grade_(\d+)\.png""")
-            .captured
-            .andThen(s => Grades.values.find(_.id == s))
-        ))
-        val clearStatus: Option[ClearStatus] = e.tryExtract(extractor(
+    def extractPlayScores(doc: browser.DocumentType): Map[Difficulty, PlayScore] = doc
+      .extract(elementList("#profile > div > div.blockRight > div > div > div > div.pdm-result"))
+      .map(extractPlayScore)
+      .map(s => (s.stage.difficulty, s))
+      .toMap
+
+    val doc: browser.DocumentType = browser.parseString(response.body)
+    MusicPlayData(extractMusicDetail(doc), extractPlayScores(doc))
+  }
+
+  private def extractPlayScore(e: Element): PlayScore = {
+    val maybeGrade = extractGrade(e)
+    PlayScore(
+      stage       = extractStage(e),
+      highScore   = extractHighScore(e),
+      clearRate   = extractClearRate(e),
+      rankPoint   = extractRankPoint(e),
+      clearStatus = extractClearStatus(e, maybeGrade),
+      grade       = maybeGrade,
+      fullCombo   = extractFullCombo(e)
+    )
+  }
+
+  private[client] def extractStage(e: Element): Stage = {
+    val difficulty = e.extract(extractor(
+      "div > div.pdm-resultHead",
+      attr("class"),
+      regexMatch("""pdm-resultHead\s+(\w+)""")
+        .captured
+        .andThen(s => Difficulties.valueSet.find(_.name.toLowerCase == s))
+        .andThen(_.getOrElse(throw new IllegalStateException("element not found.")))
+    ))
+    Stage(
+      difficulty = difficulty,
+      level = e >> extractor("div > div.pdm-resultHead > p.lv", text, regexMatch("""Lv\.\s*(\d+)""").captured.andThen(_.toInt)),
+      notes = e >> extractor("div > div.pdm-resultHead > p.note", text, regexMatch("""Note:\s*(\d+)""").captured.andThen(_.toInt))
+    )
+  }
+
+  private[client] def extractHighScore(e: Element): Int =
+    e >> extractor("div > div.leftResult > dl > dd:nth-child(2)", text, asInt)
+
+  private[client] def extractClearRate(e: Element): Double =
+    e >> extractor(
+      "div > div.leftResult > dl > dd:nth-child(4)",
+      text,
+      """(\d+\.?\d*)%""".r.findFirstMatchIn(_:String).map(_.subgroups.head).map(_.toDouble).getOrElse(0.0)
+    )
+
+  private[client] def extractRankPoint(e: Element): Option[Double] =
+    e >> extractor(
+      "div > div.leftResult > dl > dd:nth-child(6)",
+      text,
+      """(\d+\.?\d*)""".r.findFirstMatchIn(_:String).map(_.subgroups.head.toDouble)
+    )
+
+  private[client] def extractClearStatus(e: Element, maybeGrade: Option[Grade]): Option[ClearStatus] =
+    maybeGrade match {
+      case Some(g) if g == GradeF => Some(Failed)
+      case None => None
+      case Some(_) =>
+        e.tryExtract(extractor(
           "div > div.rightResult > ul > li.clear > p > img",
           attr("src"),
           regexMatch("""bnr_(\w+)_CLEAR\.png""")
             .captured
-            .andThen(s => ClearStatuses.values.find(_.displayName.toUpperCase == s).get)
-        )).orElse {
-          maybeGrade match {
-            case Some(g) if g == GradeF => Some(Failed)
-            case Some(_)                => Some(Cleared)
-            case None                   => None
-          }
-        }
-
-        val playScore = PlayScore(
-          stage       = stage,
-          highScore   = e >> extractor("div > div.leftResult > dl > dd:nth-child(2)", text, asInt),
-          clearRate   = e >> extractor("div > div.leftResult > dl > dd:nth-child(4)", text, clearRatePaser),
-          rankPoint   = e >> extractor("div > div.leftResult > dl > dd:nth-child(6)", text, rankPointPaser),
-          clearStatus = clearStatus,
-          grade       = maybeGrade,
-          fullCombo   = (e >?> element("div > div.rightResult > ul > li.fullcombo > span")).isDefined
-        )
-        (difficulty, playScore)
-      }.toMap
+            .andThen(s => ClearStatuses.values.find(_.displayName.toUpperCase == s).getOrElse(Cleared))
+        ))
     }
 
-    val doc: browser.DocumentType = browser.parseString(response.body)
-    MusicPlayData(extractMusicDetail(doc), extractPlayScores(doc))
+  private[client] def extractGrade(e: Element): Option[Grade] =
+    e.extract(extractor(
+      "div > div.rightResult > ul.pdResultIco > li.grade > img",
+      attr("src"),
+      regexMatch("""grade_(\d+)\.png""")
+        .captured
+        .andThen(s => Grades.values.find(_.id == s))
+    ))
+
+  private[client] def extractFullCombo(e: Element): Boolean =
+    (e >?> element("div > div.rightResult > ul > li.fullcombo > span")).isDefined
+
+
+  private def extractMusicDetail(doc: Document): MusicDetail = {
+    val title = doc
+      .extract(element("#profile > div > div.blockRight > div > div > div > div.pdMusicDetail.gr-Black > div > p.title"))
+      .extract(text)
+    val artist = doc
+      .extract(element("#profile > div > div.blockRight > div > div > div > div.pdMusicDetail.gr-Black > div > p.author"))
+      .extract(text)
+    val bpm = doc
+      .extract(extractor(
+        "#profile > div > div.blockRight > div > div > div > div.pdMusicDetail.gr-Black > div > p.bpm",
+        text,
+        regexMatch("""BPM\s*(\d+\.?\d*)""").captured.andThen(_.toDouble)
+      ))
+    MusicDetail(title, artist, bpm)
   }
 }
