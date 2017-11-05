@@ -71,10 +71,10 @@ class ExtractorsTest extends FunSuite with Matchers {
       |</div>
     """.stripMargin
 
-  private lazy val body01: Element = JsoupBrowser().parseString(playScoreHtml01).body
+  private lazy val playScoreBody01: Element = JsoupBrowser().parseString(playScoreHtml01).body
 
   test("extractStage01") {
-    val actual = extractStage(body01)
+    val actual = extractStage(playScoreBody01)
     actual shouldBe Stage(
       difficulty = Master,
       level = 51,
@@ -83,32 +83,32 @@ class ExtractorsTest extends FunSuite with Matchers {
   }
 
   test("extractHighScore01") {
-    val actual = extractHighScore(body01)
+    val actual = extractHighScore(playScoreBody01)
     actual shouldBe 27680
   }
 
   test("extractClearRate01") {
-    val actual = extractClearRate(body01)
+    val actual = extractClearRate(playScoreBody01)
     actual shouldBe 99.71
   }
 
   test("extractRankPoint01") {
-    val actual = extractRankPoint(body01)
+    val actual = extractRankPoint(playScoreBody01)
     actual shouldBe Some(60.58)
   }
 
   test("extractClearStatus01") {
-    val actual = extractClearStatus(body01, Some(GradeSpp))
+    val actual = extractClearStatus(playScoreBody01, Some(GradeSpp))
     actual shouldBe Some(Ultimate)
   }
 
   test("extractGrade01") {
-    val actual = extractGrade(body01)
+    val actual = extractGrade(playScoreBody01)
     actual shouldBe Some(GradeSpp)
   }
 
   test("extractFullCombo01") {
-    val actual = extractFullCombo(body01)
+    val actual = extractFullCombo(playScoreBody01)
     actual shouldBe true
   }
 }
