@@ -11,4 +11,12 @@ case class PlayScore(
   clearStatus: Option[ClearStatus],
   grade: Option[Grade],
   fullCombo: Boolean
-)
+) extends Ordered[PlayScore] {
+  override def compare(that: PlayScore): Int = PlayScore.ordering.compare(this, that)
+}
+
+object PlayScore {
+  val ordering: Ordering[PlayScore] = Ordering.by((ps: PlayScore) =>
+    (ps.highScore, ps.clearRate, ps.rankPoint, ps.clearStatus, ps.grade, ps.fullCombo)
+  )
+}
