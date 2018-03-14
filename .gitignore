@@ -81,3 +81,14 @@ project/plugins/project/
 
 
 # End of https://www.gitignore.io/api/sbt,scala,intellij+all
+
+# Ensime
+.ensime
+.ensime_cache/
+
+# Serverless
+.serverless/
+
+# otogame-updater
+.envVarTweeting.yml
+.varUpdateUserData.yml
