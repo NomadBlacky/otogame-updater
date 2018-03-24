@@ -58,7 +58,8 @@ provider:
 # Make sure to run "sbt assembly" to create a jar file
 # with all your dependencies and put that jar file name here.
 package:
-  artifact: target/scala-2.12/otogame.jar
+#  artifact: target/scala-2.12/otogame.jar
+  artifact: out/aws/assembly/dest/out.jar
 
 functions:
   updateUserData:
