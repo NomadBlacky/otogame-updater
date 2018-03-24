@@ -16,7 +16,9 @@ trait CommonModule extends SbtModule {
       ivy"org.scalactic::scalactic:3.0.1",
       ivy"org.scalatest::scalatest:3.0.1"
     )
-    def testFramework = "org.scalatest.tools.Framework"
+    def testFrameworks = Seq(
+      "org.scalatest.tools.Framework"
+    )
   }
 }
 
