@@ -3,7 +3,7 @@ import mill.scalalib._
 
 trait CommonModule extends SbtModule {
   def scalaVersion = "2.12.3"
-  def scalacOptions = Seq(
+  override def scalacOptions = Seq(
     "-deprecation",
     "-encoding", "UTF-8",
     "-target:jvm-1.8",
@@ -12,7 +12,7 @@ trait CommonModule extends SbtModule {
   )
 
   object test extends Tests {
-    def ivyDeps = Agg(
+    override def ivyDeps = Agg(
       ivy"org.scalactic::scalactic:3.0.1",
       ivy"org.scalatest::scalatest:3.0.1"
     )
@@ -23,7 +23,7 @@ trait CommonModule extends SbtModule {
 }
 
 trait CoreModule extends CommonModule {
-  def ivyDeps = super.ivyDeps() ++ Agg(
+  override def ivyDeps = super.ivyDeps() ++ Agg(
     ivy"org.scalaj::scalaj-http:2.3.0",
     ivy"net.ruippeixotog::scala-scraper:2.0.0",
     ivy"com.danielasfregola::twitter4s:5.1",
@@ -32,10 +32,10 @@ trait CoreModule extends CommonModule {
 object core extends CoreModule
 
 trait AWSModule extends CommonModule {
-  def moduleDeps = Seq(
+  override def moduleDeps = Seq(
     core
   )
-  def ivyDeps = super.ivyDeps() ++ Agg(
+  override def ivyDeps = super.ivyDeps() ++ Agg(
     ivy"com.amazonaws:aws-java-sdk-lambda:1.11.175",
     ivy"com.amazonaws:aws-lambda-java-events:1.3.0",
     ivy"com.amazonaws:aws-lambda-java-core:1.1.0",
