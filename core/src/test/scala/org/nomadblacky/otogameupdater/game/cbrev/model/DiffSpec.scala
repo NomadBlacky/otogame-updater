@@ -1,5 +1,7 @@
 package org.nomadblacky.otogameupdater.game.cbrev.model
 
+import org.scalatest.{FunSpec, Matchers}
+
 class DiffSpec extends FunSpec with Matchers {
 
   describe("Upper") {
