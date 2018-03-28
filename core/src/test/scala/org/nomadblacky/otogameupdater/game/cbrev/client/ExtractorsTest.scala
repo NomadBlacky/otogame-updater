@@ -109,7 +109,7 @@ class ExtractorsTest extends FunSuite with Matchers {
 
   test("extractFullCombo01") {
     val actual = extractFullCombo(playScoreBody01)
-    actual shouldBe true
+    actual shouldBe FullComboStatus.FullCombo
   }
 
 

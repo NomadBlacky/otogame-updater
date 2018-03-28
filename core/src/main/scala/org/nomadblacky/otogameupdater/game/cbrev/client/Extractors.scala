@@ -148,8 +148,10 @@ trait Extractors {
         .andThen(s => Grade.values.find(_.id == s))
     ))
 
-  private[client] def extractFullCombo(e: Element): Boolean =
-    (e >?> element("div > div.rightResult > ul > li.fullcombo > span")).isDefined
+  private[client] def extractFullCombo(e: Element): FullComboStatus =
+    FullComboStatus.fromBoolean(
+      (e >?> element("div > div.rightResult > ul > li.fullcombo > span")).isDefined
+    )
 
 
   private def extractMusicDetail(doc: Document): MusicDetail = {

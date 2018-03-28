@@ -10,7 +10,7 @@ case class PlayScore(
   rankPoint: Option[Double],
   clearStatus: Option[ClearStatus],
   grade: Option[Grade],
-  fullCombo: Boolean
+  fullCombo: FullComboStatus
 ) extends Ordered[PlayScore] {
   override def compare(that: PlayScore): Int = PlayScore.ordering.compare(this, that)
 }
