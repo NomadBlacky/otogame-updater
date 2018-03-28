@@ -7,8 +7,6 @@ import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 import net.ruippeixotog.scalascraper.dsl.DSL.Parse._
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.model.{Document, Element}
-import org.nomadblacky.otogameupdater.game.cbrev.model.ClearStatuses.{Cleared, Failed}
-import org.nomadblacky.otogameupdater.game.cbrev.model.Grades.GradeF
 import org.nomadblacky.otogameupdater.game.cbrev.model._
 
 import scala.util.matching.Regex
@@ -100,7 +98,7 @@ trait Extractors {
       attr("class"),
       regexMatch("""pdm-resultHead\s+(\w+)""")
         .captured
-        .andThen(s => Difficulties.valueSet.find(_.name.toLowerCase == s))
+        .andThen(s => Difficulty.values.find(_.name.toLowerCase == s))
         .andThen(_.getOrElse(throw new IllegalStateException("element not found.")))
     ))
     Stage(
@@ -129,7 +127,7 @@ trait Extractors {
 
   private[client] def extractClearStatus(e: Element, maybeGrade: Option[Grade]): Option[ClearStatus] =
     maybeGrade match {
-      case Some(g) if g == GradeF => Some(Failed)
+      case Some(g) if g == Grade.F => Some(ClearStatus.Failed)
       case None => None
       case Some(_) =>
         e.tryExtract(extractor(
@@ -137,7 +135,7 @@ trait Extractors {
           attr("src"),
           regexMatch("""bnr_(\w+)_CLEAR\.png""")
             .captured
-            .andThen(s => ClearStatuses.values.find(_.displayName.toUpperCase == s).getOrElse(Cleared))
+            .andThen(s => ClearStatus.values.find(_.displayName.toUpperCase == s).getOrElse(ClearStatus.Cleared))
         ))
     }
 
@@ -147,7 +145,7 @@ trait Extractors {
       attr("src"),
       regexMatch("""grade_(\d+)\.png""")
         .captured
-        .andThen(s => Grades.values.find(_.id == s))
+        .andThen(s => Grade.values.find(_.id == s))
     ))
 
   private[client] def extractFullCombo(e: Element): Boolean =

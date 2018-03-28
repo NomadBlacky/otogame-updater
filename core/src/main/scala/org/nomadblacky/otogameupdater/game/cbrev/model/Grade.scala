@@ -13,43 +13,18 @@ sealed abstract class Grade(
 
 object Grade {
   implicit val ordering: Ordering[Grade] = Ordering.by(_.order)
-}
 
-object Grades {
+  object Spp extends Grade(10, "0", "S++")
+  object Sp  extends Grade(9, "1", "S+")
+  object S   extends Grade(8, "2", "S")
+  object Ap  extends Grade(7, "3", "A+")
+  object A   extends Grade(6, "4", "A")
+  object Bp  extends Grade(5, "5", "B+")
+  object B   extends Grade(4, "6", "B")
+  object C   extends Grade(3, "7", "C")
+  object D   extends Grade(2, "8", "D")
+  object E   extends Grade(1, "9", "E")
+  object F   extends Grade(0, "10", "F")
 
-  object GradeSpp extends Grade(10, "0", "S++")
-
-  object GradeSp extends Grade(9, "1", "S+")
-
-  object GradeS extends Grade(8, "2", "S")
-
-  object GradeAp extends Grade(7, "3", "A+")
-
-  object GradeA extends Grade(6, "4", "A")
-
-  object GradeBp extends Grade(5, "5", "B+")
-
-  object GradeB extends Grade(4, "6", "B")
-
-  object GradeC extends Grade(3, "7", "C")
-
-  object GradeD extends Grade(2, "8", "D")
-
-  object GradeE extends Grade(1, "9", "E")
-
-  object GradeF extends Grade(0, "10", "F")
-
-  val values = Set(
-    GradeSpp,
-    GradeSp,
-    GradeS,
-    GradeAp,
-    GradeA,
-    GradeBp,
-    GradeB,
-    GradeC,
-    GradeD,
-    GradeE,
-    GradeF
-  )
+  val values = Set(Spp, Sp, S, Ap, A, Bp, B, C, D, E, F)
 }

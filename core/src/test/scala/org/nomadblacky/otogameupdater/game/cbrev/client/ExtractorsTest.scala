@@ -2,9 +2,9 @@ package org.nomadblacky.otogameupdater.game.cbrev.client
 
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.model.Element
-import org.nomadblacky.otogameupdater.game.cbrev.model.ClearStatuses.Ultimate
-import org.nomadblacky.otogameupdater.game.cbrev.model.Difficulties._
-import org.nomadblacky.otogameupdater.game.cbrev.model.Grades.GradeSpp
+import org.nomadblacky.otogameupdater.game.cbrev.model.ClearStatus
+import org.nomadblacky.otogameupdater.game.cbrev.model.Difficulty
+import org.nomadblacky.otogameupdater.game.cbrev.model.Grade
 import org.nomadblacky.otogameupdater.game.cbrev.model._
 import org.scalatest.{FunSuite, Matchers}
 
@@ -76,7 +76,7 @@ class ExtractorsTest extends FunSuite with Matchers {
   test("extractStage01") {
     val actual = extractStage(playScoreBody01)
     actual shouldBe Stage(
-      difficulty = Master,
+      difficulty = Difficulty.Master,
       level = 51,
       notes = 285
     )
@@ -98,13 +98,13 @@ class ExtractorsTest extends FunSuite with Matchers {
   }
 
   test("extractClearStatus01") {
-    val actual = extractClearStatus(playScoreBody01, Some(GradeSpp))
-    actual shouldBe Some(Ultimate)
+    val actual = extractClearStatus(playScoreBody01, Some(Grade.Spp))
+    actual shouldBe Some(ClearStatus.Ultimate)
   }
 
   test("extractGrade01") {
     val actual = extractGrade(playScoreBody01)
-    actual shouldBe Some(GradeSpp)
+    actual shouldBe Some(Grade.Spp)
   }
 
   test("extractFullCombo01") {

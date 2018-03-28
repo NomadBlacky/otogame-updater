@@ -9,19 +9,12 @@ abstract sealed class Difficulty(val order: Int, val name: String) extends Order
 
 object Difficulty {
   implicit val ordering: Ordering[Difficulty] = Ordering.by(_.order)
-}
 
-object Difficulties {
-
-  object Easy extends Difficulty(0, "Easy")
-
-  object Standard extends Difficulty(1, "Standard")
-
-  object Hard extends Difficulty(2, "Hard")
-
-  object Master extends Difficulty(3, "Master")
-
+  object Easy      extends Difficulty(0, "Easy")
+  object Standard  extends Difficulty(1, "Standard")
+  object Hard      extends Difficulty(2, "Hard")
+  object Master    extends Difficulty(3, "Master")
   object Unlimited extends Difficulty(4, "Unlimited")
 
-  val valueSet = Set(Easy, Standard, Hard, Master, Unlimited)
+  val values = Set(Easy, Standard, Hard, Master, Unlimited)
 }
